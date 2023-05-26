@@ -5,21 +5,10 @@
 * Date Due: 5/23/2023
 * Assignment 1: Word Search Generator
 
-*  This program will do the following: 
-   *  This program is a basic word search generator. It will be able to generate a puzzle that is a grid of letters with words hidden within. The program is able to take words from the user and generates a word search using those words. I have also included pre-made lists so it is easier to test larger and more complex words without having to enter them manually.
-
-*  For extra credit I: 
-   * Smarter User Input: 
-      * includes commands beyond number. For example, to select the option to "STRING: Enter a new string", a user can enter "S", "s", "string" or any other variation as long as it starts with "s"
-   * Difficulty level
-      * The user specifies the difficulty level. 
-      * In short, this tells the program how many times to try to fit a word before it re-sizes the puzzle to try again.
-   * Statistics
-      *    
-   * Puzzle automatically resizes
-      * The puzzle will automatically resize base on the length of the words included and the difficulty level that the user selects.
-   * pre-made test word lists
-      * I have included 3 pre-made test word sets
+* This program will do the following: 
+    * 
+* For extra credit I: 
+    * 
 */
 
 import java.util.ArrayList;
@@ -29,7 +18,6 @@ public class TestMain {
 
     public static void main(String[] args) {
         WordSearchManager wordSearch = new WordSearchManager();
-        PuzzleNode lastPuzzle = new PuzzleNode();
 
         // delay used for type writer. change to 0 to remove effect.
         int delay = 5;
@@ -46,20 +34,18 @@ public class TestMain {
 
                     userWords = getWords();
                     difficulty = difficulty();
-                    lastPuzzle = wordSearch.generate(userWords, difficulty);
-                    wordSearch.print(lastPuzzle);
+                    wordSearch.generate(userWords, difficulty);
+                    wordSearch.print();
                     break;
-                case 'l': // Pick a list of words to generate a word search
+                    case 'l': // Pick a list of words to generate a word search
                     userWords = populatePuzzleWords(delay);
                     difficulty = difficulty();
-                    lastPuzzle = wordSearch.generate(userWords, difficulty);
-                    wordSearch.print(lastPuzzle);
+                    wordSearch.generate(userWords, difficulty);
+                    wordSearch.print();
                     break;
                 case 's': // Pick a list of words to generate a word search
-                    wordSearch.showSolution(lastPuzzle);
-                    break;
-                case 'p': // Print the saved puzzles
-                    wordSearch.listPuzzles();
+
+                    wordSearch.showSolution();
                     break;
                 case 'q': // Quit
                     System.out.println("Thanks for using the best word search puzzle generator!");
@@ -88,24 +74,23 @@ public class TestMain {
         char menuChoice = ' ';
         boolean valid = false;
         while (!valid) {
-
+            
             typeWriter(delay, "\nWhat would you like to do?\n");
             typeWriter(delay, "Custom: Make a custom puzzle (press C)");
             typeWriter(delay, "List: Pick a from a pre-made list of words to generate (press L)");
             typeWriter(delay, "Solution: Print the solution for the current puzzle (press S)");
-            typeWriter(delay, "Print: Print a list of puzzles you have made (press P)");
             typeWriter(delay, "Quit (press Q)\n");
-
+            
             menuChoice = input.nextLine().toLowerCase().charAt(0);
 
             // test for valid response
-            if (menuChoice == 'c' || menuChoice == 'l' || menuChoice == 's' || menuChoice == 'p' || menuChoice != 'q') {
+            if (menuChoice == 'c' || menuChoice == 'l' || menuChoice == 's' || menuChoice != 'q') {
                 valid = true;
             } else {
                 System.out.println("\nI did not understand your choice, please try again");
             }
         }
-
+        
         return menuChoice;
     } // end menu
 
@@ -128,17 +113,21 @@ public class TestMain {
                 moreWords = false;
             }
         }
+
+        System.out.println(userWords.toString());
+
+         
         return userWords;
     } // getWords
 
     /*------------------------------------------------------------------------- */
     /* Get the words from the user to create the puzzle */
     public static int difficulty() {
-        System.out.println("What would you like the puzzles difficulty to be?");
-        System.out.println("choose a number from 1 to 10");
-        // test string
-        int difficulty = inputTestInt(1, 10) * 10;
-        return difficulty;
+            System.out.println("What would you like the puzzles difficulty to be?");
+            System.out.println("choose a number between 5 and 100");
+            // test string
+            int difficulty = inputTestInt(5, 1000);
+           return difficulty;
     } // end difficulty
 
     /*------------------------------------------------------------------------- */
@@ -175,11 +164,11 @@ public class TestMain {
         typeWriter(delay, "\tCountries");
 
         ArrayList<String> wordList = new ArrayList<String>();
-        String[] safariAnimals = { "Safari", "Lion", "Leopard", "Buffalo", "Rhinoceros", "Giraffe",
+        String[] safariAnimals = { "Lion", "Leopard", "Buffalo", "Rhinoceros", "Giraffe",
                 "Cheetah", "Hippopotamus", "Crocodile", "Zebra", "Wildebeest", "Warthog", "Hyena",
                 "Impala", "Gazelle", "Sable", "Kudu", "Baboon", "Ostrich", "Elephant" };
 
-        String[] presidents = { "Presidents", "George Washington", "John Adams", "Thomas Jefferson",
+        String[] presidents = { "George Washington", "John Adams", "Thomas Jefferson",
                 "James Madison", "James Monroe", "John Quincy Adams", "Andrew Jackson",
                 "Martin Van Buren", "William Henry Harrison", "John Tyler", "James K Polk",
                 "Zachary Taylor", "Millard Fillmore", "Franklin Pierce", "James Buchanan",
@@ -192,11 +181,11 @@ public class TestMain {
                 "George H W Bush", "Bill Clinton", "George W Bush", "Barack Obama",
                 "Donald Trump", "Joe Biden" };
 
-        String[] countries = { "Countries", "Russia", "Canada", "China", "United States", "Brazil",
-                "Australia", "India", "Argentina", "Kazakhstan", "Algeria", "DRC", "Saudi Arabia",
-                "Mexico", "Indonesia", "Sudan", "Libya", "Iran", "Mongolia", "Peru", "Niger",
-                "Angola", "Mali", "South Africa", "Colombia", "Ethiopia", "Bolivia", "Mauritania",
-                "Egypt", "Tanzania", "Nigeria" };
+        String[] countries = { "Russia", "Canada", "China", "United States", "Brazil", "Australia",
+                "India", "Argentina", "Kazakhstan", "Algeria", "DRC", "Saudi Arabia", "Mexico",
+                "Indonesia", "Sudan", "Libya", "Iran", "Mongolia", "Peru", "Niger", "Angola",
+                "Mali", "South Africa", "Colombia", "Ethiopia", "Bolivia", "Mauritania", "Egypt",
+                "Tanzania", "Nigeria" };
 
         char listChoice;
         String[] list = new String[0];
@@ -220,7 +209,7 @@ public class TestMain {
         } else {
             System.out.println("\nI did not understand your choice, please try again");
         }
-
+         
         return wordList;
     } // end populatePuzzleWords
 
