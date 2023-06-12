@@ -7,6 +7,7 @@ public class PuzzleNode {
     private ArrayList<String> puzzleWords;
     private int wordAttempts = 0;
     private int difficulty = 1;
+    private String puzzleName;
 
     /*------------------------------------------------------------------------- */
     // Default constructor
@@ -16,11 +17,14 @@ public class PuzzleNode {
 
     /*------------------------------------------------------------------------- */
     // Create a new node
-    public PuzzleNode(int diffIn, ArrayList<String> wordsIn, char[][] puzzleIn, int attemptsIn) {
+    public PuzzleNode(int diffIn, ArrayList<String> wordsIn, char[][] puzzleIn,
+            int attemptsIn, String name) {
+                
         this.puzzle = puzzleIn;
         this.puzzleWords = wordsIn;
         this.difficulty = diffIn;
         this.wordAttempts = attemptsIn;
+        this.puzzleName = name;
     }
 
     /*------------------------------------------------------------------------- */
@@ -41,16 +45,22 @@ public class PuzzleNode {
     public int getDifficulty() {
         return this.difficulty;
     }
-    
+
     /*------------------------------------------------------------------------- */
     // Get word attempts
     public int getWordAttempts() {
         return this.wordAttempts;
     }
-    
+
     /*------------------------------------------------------------------------- */
     // Get puzzle size
-    public int getPuzzleSize() {
+    public int getSize() {
         return this.puzzle.length;
+    }
+
+    /*------------------------------------------------------------------------- */
+    // Get puzzle size
+    public String getName() {
+        return this.puzzleName;
     }
 }
