@@ -1,11 +1,13 @@
-/* WordSearchManager.java creates and displays the puzzle with the word input from TestMain.java */
 
-import java.security.SecureRandom;
+/* WordSearchManager.java creates and displays the puzzle with the word input from TestMain.java */
 import java.util.ArrayList;
+import java.util.*;
+import java.io.*;
+import java.security.SecureRandom;
 
 public class WordSearchManager {
     private ArrayList<PuzzleNode> savedPuzzles = new ArrayList<>(0);
-    private PuzzleNode puzzleNode = new PuzzleNode();
+    private PuzzleNode thisPuzzle = new PuzzleNode();
 
     private char fillChar = '.';
 
@@ -20,6 +22,9 @@ public class WordSearchManager {
      * words and what the words are and generate a word search based on those words.
      */
     public PuzzleNode generate(ArrayList<String> words, int difficulty) {
+        // extract the puzzle name from the word list 
+        String name = words.get(0);
+                words.remove(0);
 
         SecureRandom randNum = new SecureRandom();
         int wordAttemptCounter = 0;
@@ -69,6 +74,9 @@ public class WordSearchManager {
                         break;
                     }
                 } while (!wordSuccess);
+                
+                // add placement attempts to counter
+                wordAttemptCounter += placementAttempts;
 
                 // size test successful
                 if (i == words.size() - 1) {
@@ -76,7 +84,6 @@ public class WordSearchManager {
                 }
                 // size test failed, loop exit
                 if (placementAttempts > (words.size() * difficulty)) {
-                    wordAttemptCounter += placementAttempts;
                     size++;
                     tempPuzzle = new char[size][size];
                     break;
@@ -85,10 +92,10 @@ public class WordSearchManager {
         } // end while (!sizeTest)
 
         // save puzzle
-        puzzleNode = new PuzzleNode(difficulty, words, tempPuzzle, wordAttemptCounter);
-        savedPuzzles.add(puzzleNode);
+        thisPuzzle = new PuzzleNode(difficulty, words, tempPuzzle, wordAttemptCounter, name);
+        savedPuzzles.add(thisPuzzle);
 
-        return puzzleNode;
+        return thisPuzzle;
     } // end of generate
 
     /*------------------------------------------------------------------------- */
@@ -103,7 +110,8 @@ public class WordSearchManager {
 
     /*------------------------------------------------------------------------- */
     /* Test if the word will fit before writing it to the array */
-    private boolean testWordFit(char[][] tempPuzzle, int xAxis, int yAxis, int wordDirection, String thisWord) {
+    private boolean testWordFit(char[][] tempPuzzle, int xAxis, int yAxis, int wordDirection,
+            String thisWord) {
         boolean wordTest = true;
         for (int j = 0; j < thisWord.length(); j++) {
             try {
@@ -139,7 +147,8 @@ public class WordSearchManager {
 
     /*------------------------------------------------------------------------- */
     /* Add word after it has been tested */
-    private void addWord(char[][] tempPuzzle, int xAxis, int yAxis, int wordDirection, String thisWord) {
+    private void addWord(char[][] tempPuzzle, int xAxis, int yAxis, int wordDirection,
+            String thisWord) {
         try {
             for (int j = 0; j < thisWord.length(); j++) {
 
@@ -167,47 +176,97 @@ public class WordSearchManager {
 
     /*------------------------------------------------------------------------- */
     /* This method prints the current word search that has been generated. */
-    public void print(PuzzleNode PuzzleNode) {
-        char[][] puzzleArr = puzzleNode.getPuzzle();
-        SecureRandom randNum = new SecureRandom();
-        ArrayList<String> puzzleWords = puzzleNode.getWords();
+    public void print(PuzzleNode puzzle) {
+        thisPuzzle = puzzle;
+        String puzzleName = thisPuzzle.getName();
+        
+            char[][] puzzleArr = thisPuzzle.getPuzzle();
+            SecureRandom randNum = new SecureRandom();
+            ArrayList<String> puzzleWords = thisPuzzle.getWords();
 
-        // tempPuzzle = randomLetters(tempPuzzle);
-        for (int i = 0; i < puzzleArr.length; i++) {
-            for (int j = 0; j < puzzleArr[i].length; j++) {
-                if (puzzleArr[i][j] == fillChar) {
-                    System.out.print((char) (randNum.nextInt(26) + 65) + "  ");
-                } else {
-                    System.out.print(puzzleArr[i][j] + "  ");
+            System.out.printf("\n%40s\n\n",  puzzleName);
+            // tempPuzzle = randomLetters(tempPuzzle);
+            for (int i = 0; i < puzzleArr.length; i++) {
+                System.out.print("\n\t");
+                for (int j = 0; j < puzzleArr[i].length; j++) {
+                    if (puzzleArr[i][j] == fillChar) {
+                        System.out.print((char) (randNum.nextInt(26) + 65) + "  ");
+                    } else {
+                        System.out.print(puzzleArr[i][j] + "  ");
+                    }
                 }
             }
-            System.out.println("");
-        }
 
-        for (int i = 0; i < puzzleWords.size(); i += 0) {
-            if (i + 3 <= puzzleWords.size()) {
-                System.out.printf("\t%-25s%-25s%-25s\n", puzzleWords.get(i), puzzleWords.get(i + 1),
-                        puzzleWords.get(i + 2));
-                i += 3;
-            } else if (i + 2 <= puzzleWords.size()) {
-                System.out.printf("\t%-25s%-25s\n", puzzleWords.get(i), puzzleWords.get(i + 1));
-                i += 2;
-            } else {
-                System.out.printf("\t%-25s\n", puzzleWords.get(i));
-                i++;
+            System.out.print("\n\t");
+            for (int i = 0; i < puzzleWords.size(); i += 0) {
+                if (i + 3 <= puzzleWords.size()) {
+                    System.out.printf("\n\t%-25s%-25s%-25s\t", puzzleWords.get(i),
+                            puzzleWords.get(i + 1), puzzleWords.get(i + 2));
+                    i += 3;
+                } else if (i + 2 <= puzzleWords.size()) {
+                    System.out.printf("\n\t%-25s%-25s%-25s\t\n", puzzleWords.get(i), 
+                            puzzleWords.get(i + 1), "");
+                    i += 2;
+                } else {
+                    System.out.printf("\n\t%-25s%-25s%-25s\t\n", puzzleWords.get(i), "", "");
+                    i++;
+                }
             }
+        
+    } // end of print
+
+    /*------------------------------------------------------------------------- */
+    /* This method prints the current word search that has been generated. */
+    public void saveToFile(PuzzleNode puzzle) {
+        thisPuzzle = puzzle;
+        String puzzleName = thisPuzzle.getName();
+        
+        // test if file exists in the directory
+        try {
+            PrintStream fileWriter = new PrintStream(new File(puzzleName + "wordSearch.txt"));
+
+            char[][] puzzleArr = thisPuzzle.getPuzzle();
+            SecureRandom randNum = new SecureRandom();
+            ArrayList<String> puzzleWords = thisPuzzle.getWords();
+
+            fileWriter.printf("\n%40s\n\n",  puzzleName);
+            // tempPuzzle = randomLetters(tempPuzzle);
+            for (int i = 0; i < puzzleArr.length; i++) {
+                for (int j = 0; j < puzzleArr[i].length; j++) {
+                    if (puzzleArr[i][j] == fillChar) {
+                        fileWriter.print((char) (randNum.nextInt(26) + 65) + "  ");
+                    } else {
+                        fileWriter.print(puzzleArr[i][j] + "  ");
+                    }
+                }
+                fileWriter.print("\n\t");
+            }
+
+            for (int i = 0; i < puzzleWords.size(); i += 0) {
+                if (i + 3 <= puzzleWords.size()) {
+                    fileWriter.printf("\n\t%-25s%-25s%-25s\t", puzzleWords.get(i),
+                            puzzleWords.get(i + 1), puzzleWords.get(i + 2));
+                    i += 3;
+                } else if (i + 2 <= puzzleWords.size()) {
+                    fileWriter.printf("\n\t%-25s%-25s%-25s\t\n", puzzleWords.get(i), 
+                            puzzleWords.get(i + 1), "");
+                    i += 2;
+                } else {
+                    fileWriter.printf("\n\t%-25s%-25s%-25s\t\n", puzzleWords.get(i), "", "");
+                    i++;
+                }
+            }
+           
+        } catch (FileNotFoundException e) {
+            System.out.println(e);
         }
-        System.out.println("It took " + puzzleNode.getWordAttempts() + " attempts to place words to");
-        System.out.println("generate this " + puzzleArr.length + " x " + puzzleArr.length + " puzzle");
-        System.out.println("with " + puzzleWords.size() + " words on difficulty " +
-                puzzleNode.getDifficulty());
     } // end of print
 
     /*------------------------------------------------------------------------- */
     // This method prints the solution to the word search that has been generated.
-    public void showSolution(PuzzleNode PuzzleNode) {
+    public void showSolution(PuzzleNode puzzle) {
 
-        char[][] puzzleArr = puzzleNode.getPuzzle();
+        char[][] puzzleArr = thisPuzzle.getPuzzle();
         for (int i = 0; i < puzzleArr.length; i++) {
             for (int j = 0; j < puzzleArr[i].length; j++) {
                 System.out.print(puzzleArr[i][j] + "  ");
@@ -219,18 +278,18 @@ public class WordSearchManager {
     /*------------------------------------------------------------------------- */
     // This method prints the solution to the word search that has been generated.
     public void listPuzzles() {
-        PuzzleNode thisPuzzle;
 
-        System.out.printf("|%-7s|%-20s|%-7s|%-7s|%-8s|\n",
-                "Index", "Puzzle Name", "Size", "Diff", "Attempts");
+        System.out.printf("|%-8s|%-25s|%-8s|%-8s|%-8s\n",
+                "Index", "Puzzle Name", "Size", "Diff", "Word");
+        System.out.printf("|%-8s|%-25s|%-8s|%-8s|%-8s\n", "", "", "", "", "Attempts");
 
         for (int i = 0; i < savedPuzzles.size(); i++) {
             thisPuzzle = savedPuzzles.get(i);
 
-            System.out.printf("|%-7s|%-20s|%-7s|%-7s|%-7s|\n", i,
-                    thisPuzzle.getWords().get(0),
-                    thisPuzzle.getPuzzleSize(),
-                    thisPuzzle.getDifficulty(),
+            System.out.printf("|%-8s|%-25s|%-8s|%-8s|%-8s\n", i,
+                    thisPuzzle.getName(),
+                    thisPuzzle.getSize(),
+                    thisPuzzle.getDifficulty()/10,
                     thisPuzzle.getWordAttempts());
         }
     } // end of showSolution
